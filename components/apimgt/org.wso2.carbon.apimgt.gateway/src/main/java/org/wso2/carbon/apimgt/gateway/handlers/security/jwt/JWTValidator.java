@@ -119,8 +119,10 @@ public class JWTValidator {
                 getProperty(Constants.Configuration.HTTP_METHOD);
         String matchingResource = (String) synCtx.getProperty(APIConstants.API_ELECTED_RESOURCE);
         String jti;
-        JWTClaimsSet jwtClaimsSet = signedJWTInfo.getJwtClaimsSet();
-        jti = jwtClaimsSet.getJWTID();
+       // JWTClaimsSet jwtClaimsSet = signedJWTInfo.getJwtClaimsSet();
+        jti = getJWTTokenIdentifier(signedJWTInfo);
+	       
+	//	jwtClaimsSet.getJWTID();
 
         String jwtHeader = signedJWTInfo.getSignedJWT().getHeader().toString();
         if (StringUtils.isNotEmpty(jti)) {
@@ -414,6 +416,18 @@ public class JWTValidator {
 
         return OAuthServerConfiguration.getInstance().getTimeStampSkewInSeconds();
     }
+
+
+     private String getJWTTokenIdentifier(SignedJWTInfo signedJWTInfo) {
+
+        JWTClaimsSet jwtClaimsSet = signedJWTInfo.getJwtClaimsSet();
+        String jwtid = jwtClaimsSet.getJWTID();
+        if (StringUtils.isNotEmpty(jwtid)) {
+            return jwtid;
+        }
+        return signedJWTInfo.getSignedJWT().getSignature().toString();
+    }
+
 
     private JWTValidationInfo getJwtValidationInfo(SignedJWTInfo signedJWTInfo, String jti)
             throws APISecurityException {
